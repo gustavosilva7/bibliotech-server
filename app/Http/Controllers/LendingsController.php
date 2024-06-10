@@ -15,12 +15,36 @@ class LendingsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $lendings = Lendings::with('book', 'user')->get();
+        $perPage = $request->per_page ?? 10;
+        $search = $request->search ?? null;
+        $status = $request->status ?? null;
 
-        return response()->json(['message' => $lendings], 200);
+        $query = Lendings::with('book', 'user', 'user.studentProfile');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('book', function ($query) use ($search) {
+                    $query->where('title', 'ilike', "%$search%");
+                })
+                    ->orWhereHas('user', function ($query) use ($search) {
+                        $query->where('name', 'ilike', "%$search%");
+                    });
+            });
+        }
+
+        if ($status) {
+            $query->where('status', $status);
+        } else {
+            $query->whereIn('status', [StatusLendingEnum::Pendent, StatusLendingEnum::Delayed]);
+        }
+
+        $lendings = $query->paginate($perPage);
+
+        return response()->json($lendings, 200);
     }
+
 
     /**
      * Show the form for creating a new resource.

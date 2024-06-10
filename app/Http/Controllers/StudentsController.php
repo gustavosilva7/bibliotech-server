@@ -13,7 +13,7 @@ class StudentsController extends Controller
     {
         $students = StudentsProfile::with('user')->get();
 
-        return response()->json(['students' => $students], 200);
+        return response()->json($students);
     }
 
     public function store(Request $request)

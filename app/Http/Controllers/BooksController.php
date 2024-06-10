@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\StatusLendingEnum;
 use App\Models\Books;
+use App\Models\Lendings;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class BooksController extends Controller
 {
@@ -11,7 +14,7 @@ class BooksController extends Controller
     {
         $books = Books::all();
 
-        return response()->json(['message' => $books], 200);
+        return response()->json($books);
     }
 
     public function store(Request $request)
@@ -80,5 +83,61 @@ class BooksController extends Controller
         $book->delete();
 
         return response()->json(['message' => 'Book deleted'], 200);
+    }
+
+    public function getDataBooks()
+    {
+        $currentYear = Carbon::now()->year;
+
+        $booksByMonth = Books::selectRaw('extract(month from created_at) as month, COUNT(*) as count')
+            ->whereYear('created_at', $currentYear)
+            ->groupBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        $lendingsByMonth = Lendings::selectRaw('extract(month from created_at) as month, COUNT(*) as count')
+            ->whereYear('created_at', $currentYear)
+            ->groupBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        $lateLendingsByMonth = Lendings::selectRaw('extract(month from updated_at) as month, COUNT(*) as count')
+            ->whereYear('updated_at', $currentYear)
+            ->whereColumn('updated_at', '>', 'return_date')
+            ->groupBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        $data = [
+            'books' => $this->normalizeMonthlyData($booksByMonth),
+            'lendings' => $this->normalizeMonthlyData($lendingsByMonth),
+            'late_lendings' => $this->normalizeMonthlyData($lateLendingsByMonth),
+        ];
+
+        return response()->json($data, 200);
+    }
+
+    private function normalizeMonthlyData($data)
+    {
+        $normalizedData = array_fill(1, 12, 0);
+        foreach ($data as $month => $count) {
+            $normalizedData[$month] = $count;
+        }
+        return array_values($normalizedData);
+    }
+
+    public function getBooksToday()
+    {
+        $books = Books::all();
+        $lendings = Lendings::whereNot("status", StatusLendingEnum::Finished)->get();
+        $lateLendings = Lendings::where("status", StatusLendingEnum::Delayed)->get();
+
+        $data = [
+            'books' => $books,
+            'lendings' => $lendings,
+            'late_lendings' => $lateLendings,
+        ];
+
+        return response()->json($data, 200);
     }
 }
