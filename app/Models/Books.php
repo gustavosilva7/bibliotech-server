@@ -22,11 +22,11 @@ class Books extends Model
 
     public function rating()
     {
-        return $this->hasMany(Rating::class);
+        return $this->hasMany(Rating::class, 'book_id', 'id');
     }
 
     public function lendings()
     {
-        return $this->hasMany(Lendings::class);
+        return $this->hasMany(Lendings::class, 'book_id', 'id');
     }
 }

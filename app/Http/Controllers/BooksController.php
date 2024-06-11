@@ -10,9 +10,21 @@ use Illuminate\Support\Carbon;
 
 class BooksController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $books = Books::all();
+        $search = $request->search ?? null;
+        $perPage = $request->per_page ?? 20;
+
+        $query = Books::query();
+
+        if ($search) {
+            $query = Books::where('title', 'ilike', "%$search%")
+                ->orWhere('author', 'ilike', "%$search%")
+                ->orWhere('publisher', 'ilike', "%$search%")
+                ->orWhere('tag', 'ilike', "%$search%");
+        }
+
+        $books = $query->paginate($perPage);
 
         return response()->json($books);
     }
@@ -24,22 +36,25 @@ class BooksController extends Controller
             'author' => 'required|string',
             'publisher' => 'required|string',
             'year' => 'required|integer',
-            'tag' => 'required|string',
+            'tag' => 'required|integer',
             'quantity' => 'required|integer',
             'edition' => 'required|integer',
         ]);
 
-        $book = Books::create([
+        $data = [
             'title' => $request->title,
             'author' => $request->author,
             'publisher' => $request->publisher,
             'year' => $request->year,
             'tag' => $request->tag,
-            'quantity' => $request->quantity,
             'edition' => $request->edition,
-        ]);
+        ];
 
-        return response()->json(['message' => $book], 200);
+        collect()->times($request->quantity, function () use ($data) {
+            $books = Books::create($data);
+        });
+
+        return response()->json(['message' => "Success"], 200);
     }
 
     public function show($id)
@@ -56,8 +71,7 @@ class BooksController extends Controller
             'author' => 'string',
             'publisher' => 'string',
             'year' => 'integer',
-            'tag' => 'string',
-            'quantity' => 'integer',
+            'tag' => 'integer',
             'edition' => 'integer',
         ]);
 
@@ -68,12 +82,11 @@ class BooksController extends Controller
         $book->publisher = $request->publisher;
         $book->year = $request->year;
         $book->tag = $request->tag;
-        $book->quantity = $request->quantity;
         $book->edition = $request->edition;
 
         $book->save();
 
-        return response()->json(['message' => $book], 200);
+        return response()->json(['book' => $book], 200);
     }
 
     public function destroy($id)
