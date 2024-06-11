@@ -15,7 +15,6 @@ class Books extends Model
         'publisher',
         'year',
         'tag',
-        'quantity',
         'edition',
         'active',
     ];

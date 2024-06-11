@@ -8,6 +8,7 @@ use App\Models\Lendings;
 use App\Models\Raking;
 use App\Models\Rating;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class LendingsController extends Controller
@@ -45,7 +46,6 @@ class LendingsController extends Controller
         return response()->json($lendings, 200);
     }
 
-
     /**
      * Show the form for creating a new resource.
      */
@@ -74,7 +74,7 @@ class LendingsController extends Controller
         $loan = Lendings::create([
             'book_id' => $book->id,
             'user_id' => $student->id,
-            'return_date' => now()->addDays(15),
+            'return_date' => Carbon::now()->addDays(15),
             'status' => StatusLendingEnum::Pendent->value
         ]);
 

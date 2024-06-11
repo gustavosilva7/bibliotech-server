@@ -15,6 +15,18 @@ class StudentsController extends Controller
 
         return response()->json($students);
     }
+    public function fetchStudentsActives()
+    {
+        $students = StudentsProfile::with([
+            'user' => function ($query) {
+                $query->where('active', true);
+            }
+        ])->whereHas('user', function ($query) {
+            $query->where('active', true);
+        })->get();
+
+        return response()->json($students, 200);
+    }
 
     public function store(Request $request)
     {

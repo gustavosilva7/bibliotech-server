@@ -30,6 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('students')->group(
         function () {
             Route::get('/', [StudentsController::class, 'index']);
+            Route::get('/actives', [StudentsController::class, 'fetchStudentsActives']);
             Route::post('/', [StudentsController::class, 'store']);
             Route::get('/{id}', [StudentsController::class, 'show']);
         }
@@ -39,9 +40,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('books')->group(
             function () {
                 Route::get('/', [BooksController::class, 'index']);
+                Route::get('/actives', [BooksController::class, 'fetchBooksActives']);
                 Route::post('/', [BooksController::class, 'store']);
                 Route::put('/{id}', [BooksController::class, 'update']);
                 Route::delete('/{id}', [BooksController::class, 'destroy']);
+                Route::get('/print', [BooksController::class, 'printBooks']);
             }
         );
 

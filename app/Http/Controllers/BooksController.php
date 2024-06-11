@@ -29,6 +29,20 @@ class BooksController extends Controller
         return response()->json($books);
     }
 
+    public function fetchBooksActives()
+    {
+        $books = Books::where('active', true)->get();
+
+        return response()->json($books, 200);
+    }
+
+    public function printBooks()
+    {
+        $books = Books::all();
+
+        return response()->json($books, 200);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
