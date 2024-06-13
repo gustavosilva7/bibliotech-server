@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BooksController;
 use App\Http\Controllers\LendingsController;
+use App\Http\Controllers\NotesController;
 use App\Http\Controllers\StudentsController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/get-data-books', [BooksController::class, 'getDataBooks']);
     Route::get('/get-books-today', [BooksController::class, 'getBooksToday']);
+
+    Route::group(['prefix' => 'notes'], function () {
+        Route::get('/', [NotesController::class, 'index']);
+        Route::get('/latest', [NotesController::class, 'show']);
+        Route::post('/', [NotesController::class, 'store']);
+        Route::put('/{id}', [NotesController::class, 'update']);
+    });
 
     Route::prefix('students')->group(
         function () {
