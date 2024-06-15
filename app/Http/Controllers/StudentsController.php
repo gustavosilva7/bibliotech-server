@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\StudentsProfile;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class StudentsController extends Controller
@@ -66,4 +67,42 @@ class StudentsController extends Controller
 
         return response()->json(['student' => $student], 200);
     }
+
+    public function readers(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'date|nullable',
+            'end_date' => 'date|nullable',
+        ]);
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $query = StudentsProfile::with('user')
+            ->withCount([
+                'rankings' => function ($query) use ($startDate, $endDate) {
+                    if ($startDate) {
+                        $query->where('created_at', '>=', $startDate);
+                    }
+                    if ($endDate) {
+                        $query->where('created_at', '<=', $endDate);
+                    }
+                }
+            ])
+            ->whereHas('rankings', function ($query) use ($startDate, $endDate) {
+                if ($startDate) {
+                    $query->where('created_at', '>=', $startDate);
+                }
+                if ($endDate) {
+                    $query->where('created_at', '<=', $endDate);
+                }
+            })
+            ->orderBy('rankings_count', 'desc');
+
+        $students = $query->paginate(10);
+
+        return response()->json($students, 200);
+    }
+
+
 }

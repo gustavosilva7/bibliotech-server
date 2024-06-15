@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/latest', [NotesController::class, 'show']);
         Route::post('/', [NotesController::class, 'store']);
         Route::put('/{id}', [NotesController::class, 'update']);
+        Route::delete('/{id}', [NotesController::class, 'destroy']);
     });
 
     Route::prefix('students')->group(
@@ -43,11 +44,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/{id}', [StudentsController::class, 'show']);
         }
     );
+    Route::get('/ranking', [StudentsController::class, 'readers']);
 
     Route::middleware('role:admin')->group(function () {
         Route::prefix('books')->group(
             function () {
                 Route::get('/', [BooksController::class, 'index']);
+                Route::get('/books-print', [BooksController::class, 'booksPrint']);
                 Route::get('/actives', [BooksController::class, 'fetchBooksActives']);
                 Route::post('/', [BooksController::class, 'store']);
                 Route::put('/{id}', [BooksController::class, 'update']);

@@ -14,6 +14,7 @@ class NotesController extends Controller
     {
         $notes = Notes::query()
             ->where('created_by', auth()->id())
+            ->orderByDesc('id')
             ->paginate(10);
 
         return response()->json($notes);
@@ -83,8 +84,11 @@ class NotesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Notes $notes)
+    public function destroy($id)
     {
-        //
+        $note = Notes::find($id);
+        $note->delete();
+
+        return response()->json(null, 204);
     }
 }

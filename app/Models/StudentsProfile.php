@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,5 +17,10 @@ class StudentsProfile extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function rankings()
+    {
+        return $this->hasMany(Raking::class, 'user_id', 'user_id');
     }
 }
