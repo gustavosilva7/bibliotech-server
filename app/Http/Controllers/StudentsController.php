@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Lendings;
 use App\Models\StudentsProfile;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -102,6 +103,21 @@ class StudentsController extends Controller
         $students = $query->paginate(10);
 
         return response()->json($students, 200);
+    }
+
+
+    //rota para buscar os livros que o aluno leu
+    public function booksRead()
+    {
+        $user = auth()->user();
+
+        $books = DB::table('books')
+            ->join('lendings', 'books.id', '=', 'lendings.book_id')
+            ->where('lendings.user_id', $user->id)
+            ->select('books.*')
+            ->get();
+
+        return response()->json($books, 200);
     }
 
 

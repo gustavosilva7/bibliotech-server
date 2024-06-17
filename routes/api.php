@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('students')->group(
         function () {
             Route::get('/', [StudentsController::class, 'index']);
+            Route::get('/books-reads', [StudentsController::class, 'booksRead']);
             Route::get('/actives', [StudentsController::class, 'fetchStudentsActives']);
             Route::post('/', [StudentsController::class, 'store']);
             Route::get('/{id}', [StudentsController::class, 'show']);
