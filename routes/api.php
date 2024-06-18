@@ -5,6 +5,7 @@ use App\Http\Controllers\BooksController;
 use App\Http\Controllers\LendingsController;
 use App\Http\Controllers\NotesController;
 use App\Http\Controllers\StudentsController;
+use App\Http\Controllers\WishListController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,8 +26,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/user-avatar', [AuthController::class, 'addImage']);
 
-    Route::get('/get-data-books', [BooksController::class, 'getDataBooks']);
-    Route::get('/get-books-today', [BooksController::class, 'getBooksToday']);
+    Route::prefix('books')->group(
+        function () {
+            Route::get('/', [BooksController::class, 'index']);
+            Route::get('/actives', [BooksController::class, 'fetchBooksActives']);
+            Route::get('/{id}', [BooksController::class, 'show']);
+        }
+    );
 
     Route::group(['prefix' => 'notes'], function () {
         Route::get('/', [NotesController::class, 'index']);
@@ -38,6 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('students')->group(
         function () {
+            Route::get('/ranking', [StudentsController::class, 'readers']);
             Route::get('/', [StudentsController::class, 'index']);
             Route::get('/books-reads', [StudentsController::class, 'booksRead']);
             Route::get('/actives', [StudentsController::class, 'fetchStudentsActives']);
@@ -45,18 +52,16 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/{id}', [StudentsController::class, 'show']);
         }
     );
-    Route::get('/ranking', [StudentsController::class, 'readers']);
 
     Route::middleware('role:admin')->group(function () {
         Route::prefix('books')->group(
             function () {
-                Route::get('/', [BooksController::class, 'index']);
                 Route::get('/books-print', [BooksController::class, 'booksPrint']);
-                Route::get('/actives', [BooksController::class, 'fetchBooksActives']);
                 Route::post('/', [BooksController::class, 'store']);
                 Route::put('/{id}', [BooksController::class, 'update']);
                 Route::delete('/{id}', [BooksController::class, 'destroy']);
-                Route::get('/print', [BooksController::class, 'printBooks']);
+                Route::get('/get-data-books', [BooksController::class, 'getDataBooks']);
+                Route::get('/get-books-today', [BooksController::class, 'getBooksToday']);
             }
         );
 
@@ -65,6 +70,16 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::get('/', [LendingsController::class, 'index']);
                 Route::post('/', [LendingsController::class, 'create']);
                 Route::put('/{id}', [LendingsController::class, 'checked']);
+            }
+        );
+    });
+
+    Route::middleware('role:students')->group(function () {
+        Route::prefix('wish-list')->group(
+            function () {
+                Route::get('/', [WishListController::class, 'index']);
+                Route::post('/', [WishListController::class, 'store']);
+                Route::delete('/{id}', [WishListController::class, 'destroy']);
             }
         );
     });

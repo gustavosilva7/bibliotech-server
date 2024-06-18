@@ -28,4 +28,9 @@ class Books extends Model
     {
         return $this->hasMany(Lendings::class, 'book_id', 'id');
     }
+
+    public function wishList()
+    {
+        return $this->hasMany(WishList::class, 'book_id', 'id');
+    }
 }

@@ -73,9 +73,9 @@ class BooksController extends Controller
 
     public function show($id)
     {
-        $book = Books::find($id);
+        $book = Books::findOrFail($id);
 
-        return response()->json(['message' => $book], 200);
+        return response()->json($book, 200);
     }
 
     public function update(Request $request, $id)
@@ -144,15 +144,6 @@ class BooksController extends Controller
         return response()->json($data, 200);
     }
 
-    private function normalizeMonthlyData($data)
-    {
-        $normalizedData = array_fill(1, 12, 0);
-        foreach ($data as $month => $count) {
-            $normalizedData[$month] = $count;
-        }
-        return array_values($normalizedData);
-    }
-
     public function getBooksToday()
     {
         $books = Books::all();
@@ -166,5 +157,14 @@ class BooksController extends Controller
         ];
 
         return response()->json($data, 200);
+    }
+
+    private function normalizeMonthlyData($data)
+    {
+        $normalizedData = array_fill(1, 12, 0);
+        foreach ($data as $month => $count) {
+            $normalizedData[$month] = $count;
+        }
+        return array_values($normalizedData);
     }
 }

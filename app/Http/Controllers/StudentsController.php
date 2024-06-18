@@ -105,8 +105,6 @@ class StudentsController extends Controller
         return response()->json($students, 200);
     }
 
-
-    //rota para buscar os livros que o aluno leu
     public function booksRead()
     {
         $user = auth()->user();
@@ -114,6 +112,7 @@ class StudentsController extends Controller
         $books = DB::table('books')
             ->join('lendings', 'books.id', '=', 'lendings.book_id')
             ->where('lendings.user_id', $user->id)
+            ->groupBy('books.id')
             ->select('books.*')
             ->get();
 
