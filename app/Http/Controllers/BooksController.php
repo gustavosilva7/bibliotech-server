@@ -7,6 +7,7 @@ use App\Models\Books;
 use App\Models\Lendings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class BooksController extends Controller
 {
@@ -157,6 +158,34 @@ class BooksController extends Controller
         ];
 
         return response()->json($data, 200);
+    }
+
+    public function addImage(Request $request)
+    {
+        $request->validate([
+            'tag' => 'required|integer',
+            'image' => 'required|image|mimes:jpeg,png,jpg,svg|max:2048',
+        ]);
+
+        $books = Books::where('tag', $request->tag);
+
+        if ($request->hasFile('image')) {
+            $uploadFolder = 'books';
+            $image = $request->file('image');
+            $image_uploaded_path = $image->store($uploadFolder, 'public');
+            $uploadedImageResponse = array(
+                "image_name" => basename($image_uploaded_path),
+                "image_url" => Storage::disk('public')->url($image_uploaded_path),
+                "mime" => $image->getClientMimeType()
+            );
+
+            $path = "books/" . $uploadedImageResponse['image_name'];
+        }
+
+        $books->image = $path;
+        $books->save();
+
+        return response()->json(['message' => 'Image uploaded successfully'], 200);
     }
 
     private function normalizeMonthlyData($data)

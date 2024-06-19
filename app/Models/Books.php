@@ -17,6 +17,7 @@ class Books extends Model
         'tag',
         'edition',
         'active',
+        'image',
     ];
 
     public function rating()

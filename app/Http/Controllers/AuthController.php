@@ -85,14 +85,14 @@ class AuthController extends Controller
         if ($request->hasFile('image')) {
             $uploadFolder = 'users';
             $image = $request->file('image');
-            $image_uploaded_path = $image->store($uploadFolder, 'public');
+            $image_uploaded_path = $image->store($uploadFolder, 's3');
             $uploadedImageResponse = array(
                 "image_name" => basename($image_uploaded_path),
-                "image_url" => Storage::disk('public')->url($image_uploaded_path),
+                "image_url" => Storage::disk('s3')->url($image_uploaded_path),
                 "mime" => $image->getClientMimeType()
             );
 
-            $path = "users/" . $uploadedImageResponse['image_name'];
+            $path = $uploadedImageResponse['image_url'];
         }
 
         $user->image = $path;

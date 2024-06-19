@@ -30,7 +30,8 @@ Route::middleware('auth:sanctum')->group(function () {
         function () {
             Route::get('/', [BooksController::class, 'index']);
             Route::get('/actives', [BooksController::class, 'fetchBooksActives']);
-            Route::get('/{id}', [BooksController::class, 'show']);
+            Route::get('/show/{id}', [BooksController::class, 'show']);
+            Route::put('/add-image', [BooksController::class, 'addImage']);
         }
     );
 
@@ -57,11 +58,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('books')->group(
             function () {
                 Route::get('/books-print', [BooksController::class, 'booksPrint']);
-                Route::post('/', [BooksController::class, 'store']);
-                Route::put('/{id}', [BooksController::class, 'update']);
-                Route::delete('/{id}', [BooksController::class, 'destroy']);
                 Route::get('/get-data-books', [BooksController::class, 'getDataBooks']);
                 Route::get('/get-books-today', [BooksController::class, 'getBooksToday']);
+                Route::post('/', [BooksController::class, 'store']);
+                Route::put('/update/{id}', [BooksController::class, 'update']);
+                Route::delete('/delete/{id}', [BooksController::class, 'destroy']);
             }
         );
 
