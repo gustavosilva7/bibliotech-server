@@ -80,6 +80,8 @@ Route::middleware('auth:sanctum')->group(function () {
             function () {
                 Route::get('/', [WishListController::class, 'index']);
                 Route::post('/', [WishListController::class, 'store']);
+                Route::get('/{id}', [WishListController::class, 'show']);
+                Route::get('/check-list/{id}', [WishListController::class, 'hasInWishList']);
                 Route::delete('/{id}', [WishListController::class, 'destroy']);
             }
         );

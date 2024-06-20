@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Books;
 use App\Models\WishList;
 use Illuminate\Http\Request;
 
@@ -15,22 +16,13 @@ class WishListController extends Controller
         $user = auth()->user();
         $userId = $user->id;
 
-        $query = WishList::query();
-
-        $query->where('user_id', $userId)
-            ->with('book')
-            ->paginate(10);
+        $query = Books::query()
+            ->join('wish_lists', 'books.id', '=', 'wish_lists.book_id')
+            ->where('wish_lists.user_id', $userId)
+            ->select('books.*')
+            ->get();
 
         return response()->json($query);
-
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -58,25 +50,25 @@ class WishListController extends Controller
      */
     public function show(int $id)
     {
-        $wish = WishList::findOrFail($id);
+        $wish = WishList::find($id);
 
         return response()->json($wish);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(WishList $wishList)
+    public function hasInWishList(int $id)
     {
-        //
-    }
+        $user = auth()->user();
+        $userId = $user->id;
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, WishList $wishList)
-    {
-        //
+        $wish = WishList::where('user_id', $userId)
+            ->where('book_id', $id)
+            ->first();
+
+        if ($wish) {
+            return response()->json(true);
+        }
+
+        return response()->json(false);
     }
 
     /**
