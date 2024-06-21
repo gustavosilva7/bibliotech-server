@@ -76,6 +76,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::middleware('role:students')->group(function () {
+
+        Route::group(['prefix' => 'books'], function () {
+            Route::get('ranking-lending-book', [BooksController::class, 'booksMoreLending']);
+            Route::get('student/book-in-lending', [StudentsController::class, 'bookInLending']);
+            Route::get('student/check-read-book/{id}', [StudentsController::class, 'checkUserReadBook']);
+        });
+
         Route::prefix('wish-list')->group(
             function () {
                 Route::get('/', [WishListController::class, 'index']);

@@ -188,6 +188,18 @@ class BooksController extends Controller
         return response()->json(['message' => 'Image uploaded successfully'], 200);
     }
 
+    public function booksMoreLending()
+    {
+        $books = Books::query()
+            ->join('lendings', 'books.id', '=', 'lendings.book_id')
+            ->groupBy('books.id')
+            ->orderByRaw('COUNT(lendings.id) DESC')
+            ->select('books.*')
+            ->paginate(10);
+
+        return response()->json($books, 200);
+    }
+
     private function normalizeMonthlyData($data)
     {
         $normalizedData = array_fill(1, 12, 0);

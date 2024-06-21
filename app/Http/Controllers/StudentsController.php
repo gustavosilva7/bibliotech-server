@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\StatusLendingEnum;
 use App\Models\Lendings;
 use App\Models\StudentsProfile;
 use App\Models\User;
@@ -113,11 +114,37 @@ class StudentsController extends Controller
             ->join('lendings', 'books.id', '=', 'lendings.book_id')
             ->where('lendings.user_id', $user->id)
             ->groupBy('books.id')
+            ->orderBy(DB::raw('COUNT(lendings.id)'), 'desc')
+            ->where('lendings.status', StatusLendingEnum::Finished)
             ->select('books.*')
             ->get();
 
         return response()->json($books, 200);
     }
 
+    public function bookInLending()
+    {
+        $user = auth()->user();
 
+        $book = DB::table('books')
+            ->join('lendings', 'books.id', '=', 'lendings.book_id')
+            ->where('lendings.user_id', $user->id)
+            ->where('lendings.status', StatusLendingEnum::Pendent)
+            ->select('books.*')
+            ->first();
+
+        return response()->json($book, 200);
+    }
+
+    public function checkUserReadBook(int $bookId)
+    {
+        $user = auth()->user();
+
+        $check = Lendings::where('user_id', $user->id)
+            ->where('book_id', $bookId)
+            ->where('status', StatusLendingEnum::Finished)
+            ->get();
+
+        return response()->json($check, 200);
+    }
 }
