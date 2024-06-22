@@ -100,4 +100,9 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Image uploaded successfully'], 200);
     }
+
+    public function logout()
+    {
+        auth()->user()->tokens()->delete();
+    }
 }

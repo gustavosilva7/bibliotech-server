@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BooksController;
 use App\Http\Controllers\LendingsController;
 use App\Http\Controllers\NotesController;
+use App\Http\Controllers\StarsController;
 use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\WishListController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/user-avatar', [AuthController::class, 'addImage']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::prefix('books')->group(
         function () {
@@ -79,6 +81,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::group(['prefix' => 'books'], function () {
             Route::get('ranking-lending-book', [BooksController::class, 'booksMoreLending']);
+            Route::get('ranking-rating-book', [BooksController::class, 'booksMoreRating']);
             Route::get('student/book-in-lending', [StudentsController::class, 'bookInLending']);
             Route::get('student/check-read-book/{id}', [StudentsController::class, 'checkUserReadBook']);
         });
@@ -90,6 +93,13 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::get('/{id}', [WishListController::class, 'show']);
                 Route::get('/check-list/{id}', [WishListController::class, 'hasInWishList']);
                 Route::delete('/{id}', [WishListController::class, 'destroy']);
+            }
+        );
+
+        Route::prefix('stars')->group(
+            function () {
+                Route::post('/', [StarsController::class, 'rateBook']);
+                Route::put('/{id}', [StarsController::class, 'updateRate']);
             }
         );
     });

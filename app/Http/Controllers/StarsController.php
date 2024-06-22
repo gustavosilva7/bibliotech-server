@@ -7,59 +7,39 @@ use Illuminate\Http\Request;
 
 class StarsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function rateBook(Request $request)
     {
-        //
+        $request->validate([
+            'book_id' => 'required|integer|exists:books,id',
+            'avaliation' => 'required|integer|min:1|max:5',
+        ]);
+
+        $rate = Stars::create([
+            'user_id' => auth()->id(),
+            'book_id' => $request->book_id,
+            'avaliation' => $request->avaliation,
+        ]);
+
+        return response()->json($rate, 201);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function updateRate(Request $request, $id)
     {
-        //
-    }
+        $request->validate([
+            'avaliation' => 'required|integer|min:1|max:5',
+        ]);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $rate = Stars::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->first();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Stars $stars)
-    {
-        //
-    }
+        if (!$rate) {
+            return response()->json(['message' => 'Rate not found'], 404);
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Stars $stars)
-    {
-        //
-    }
+        $rate->avaliation = $request->avaliation;
+        $rate->save();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Stars $stars)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Stars $stars)
-    {
-        //
+        return response()->json($rate, 200);
     }
 }

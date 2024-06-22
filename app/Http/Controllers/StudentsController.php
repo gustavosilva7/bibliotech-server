@@ -145,6 +145,10 @@ class StudentsController extends Controller
             ->where('status', StatusLendingEnum::Finished)
             ->get();
 
+        if ($check->isEmpty()) {
+            return response()->json(false);
+        }
+
         return response()->json($check, 200);
     }
 }

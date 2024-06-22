@@ -74,7 +74,7 @@ class BooksController extends Controller
 
     public function show($id)
     {
-        $book = Books::findOrFail($id);
+        $book = Books::findOrFail($id)->load('stars');
 
         return response()->json($book, 200);
     }
@@ -194,6 +194,18 @@ class BooksController extends Controller
             ->join('lendings', 'books.id', '=', 'lendings.book_id')
             ->groupBy('books.id')
             ->orderByRaw('COUNT(lendings.id) DESC')
+            ->select('books.*')
+            ->paginate(10);
+
+        return response()->json($books, 200);
+    }
+
+    public function booksMoreRating()
+    {
+        $books = Books::query()
+            ->join('stars', 'books.id', '=', 'stars.book_id')
+            ->groupBy('books.id')
+            ->orderByRaw('AVG(stars.avaliation) DESC')
             ->select('books.*')
             ->paginate(10);
 
