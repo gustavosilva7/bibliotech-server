@@ -76,7 +76,9 @@ class WishListController extends Controller
      */
     public function destroy(int $id)
     {
-        $wish = WishList::findOrFail($id);
+        $wish = WishList::where('book_id', $id)
+            ->where('user_id', auth()->user()->id)
+            ->first();
 
         $wish->delete();
 

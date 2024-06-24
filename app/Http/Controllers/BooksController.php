@@ -25,7 +25,7 @@ class BooksController extends Controller
                 ->orWhere('tag', 'ilike', "%$search%");
         }
 
-        $books = $query->paginate($perPage);
+        $books = $query->orderBy('id', 'asc')->paginate($perPage);
 
         return response()->json($books);
     }
