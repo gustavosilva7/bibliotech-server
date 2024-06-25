@@ -117,7 +117,7 @@ class StudentsController extends Controller
             ->orderBy(DB::raw('COUNT(lendings.id)'), 'desc')
             ->where('lendings.status', StatusLendingEnum::Finished)
             ->select('books.*')
-            ->get();
+            ->paginate(10);
 
         return response()->json($books, 200);
     }

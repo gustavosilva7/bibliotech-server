@@ -20,7 +20,7 @@ class WishListController extends Controller
             ->join('wish_lists', 'books.id', '=', 'wish_lists.book_id')
             ->where('wish_lists.user_id', $userId)
             ->select('books.*')
-            ->get();
+            ->paginate(10);
 
         return response()->json($query);
     }

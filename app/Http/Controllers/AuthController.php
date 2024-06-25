@@ -71,7 +71,11 @@ class AuthController extends Controller
 
     public function user()
     {
-        return response()->json(auth()->user());
+        $auth = auth()->user();
+
+        $user = User::with(['studentProfile', 'role'])->find($auth->id);
+
+        return response()->json($user);
     }
 
     public function addImage(Request $request)
