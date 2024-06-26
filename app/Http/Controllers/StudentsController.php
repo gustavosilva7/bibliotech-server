@@ -70,6 +70,39 @@ class StudentsController extends Controller
         return response()->json(['student' => $student], 200);
     }
 
+    public function update(Request $request, int $id)
+    {
+        $request->validate([
+            'name' => 'nullable|string',
+            'email' => 'nullable|email',
+            'serie' => 'nullable|integer',
+            'class' => 'nullable|integer',
+        ]);
+
+        $user = User::find($id);
+        $student = StudentsProfile::where('user_id', $id)->first();
+
+        if ($request->name) {
+            $user->name = $request->name;
+        }
+        if ($request->email) {
+            $user->email = $request->email;
+        }
+        if ($request->serie) {
+            $student->serie = $request->serie;
+        }
+        if ($request->class) {
+            $student->class = $request->class;
+        }
+
+        $user->save();
+        $student->save();
+
+        $userUpdate = User::with(['studentProfile', 'role'])->find($id);
+
+        return response()->json($userUpdate, 200);
+    }
+
     public function readers(Request $request)
     {
         $request->validate([
