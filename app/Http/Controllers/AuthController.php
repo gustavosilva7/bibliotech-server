@@ -81,7 +81,7 @@ class AuthController extends Controller
     public function addImage(Request $request)
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,svg|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,svg',
         ]);
 
         $user = auth()->user();
