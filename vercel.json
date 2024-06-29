@@ -13,7 +13,7 @@
     "env": {
         "APP_ENV": "production",
         "APP_DEBUG": "true",
-        "APP_URL": "https://your.url.from.vercel.app",
+        "APP_URL": "https://bibliotech-server.vercel.app",
         "APP_KEY": "base64:Los+X0bA3iQT1A918cWNncOLwLLUikq5CylV9UDYJR0",
 
         "APP_CONFIG_CACHE": "/tmp/config.php",
