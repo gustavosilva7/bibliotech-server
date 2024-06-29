@@ -172,10 +172,10 @@ class BooksController extends Controller
         if ($request->hasFile('image')) {
             $uploadFolder = 'books';
             $image = $request->file('image');
-            $image_uploaded_path = $image->store($uploadFolder, 'public');
+            $image_uploaded_path = $image->store($uploadFolder, 's3');
             $uploadedImageResponse = array(
                 "image_name" => basename($image_uploaded_path),
-                "image_url" => Storage::disk('public')->url($image_uploaded_path),
+                "image_url" => Storage::disk('s3')->url($image_uploaded_path),
                 "mime" => $image->getClientMimeType()
             );
 
