@@ -67,7 +67,7 @@ class BooksController extends Controller
                 "mime" => $image->getClientMimeType()
             );
 
-            $path = "books/" . $uploadedImageResponse['image_name'];
+            $path = "books/" . $uploadedImageResponse['image_url'];
         }
 
         $data = [
