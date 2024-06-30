@@ -54,7 +54,21 @@ class BooksController extends Controller
             'tag' => 'required|integer',
             'quantity' => 'required|integer',
             'edition' => 'required|integer',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048'
         ]);
+
+        if ($request->hasFile('image')) {
+            $uploadFolder = 'books';
+            $image = $request->file('image');
+            $image_uploaded_path = $image->store($uploadFolder, 'public');
+            $uploadedImageResponse = array(
+                "image_name" => basename($image_uploaded_path),
+                "image_url" => Storage::disk('public')->url($image_uploaded_path),
+                "mime" => $image->getClientMimeType()
+            );
+
+            $path = "books/" . $uploadedImageResponse['image_name'];
+        }
 
         $data = [
             'title' => $request->title,
@@ -63,6 +77,7 @@ class BooksController extends Controller
             'year' => $request->year,
             'tag' => $request->tag,
             'edition' => $request->edition,
+            'image' => $path,
         ];
 
         collect()->times($request->quantity, function () use ($data) {
